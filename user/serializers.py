@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User, Habit
 from django.contrib.auth.hashers import make_password
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +27,13 @@ class HabitSerializer(serializers.ModelSerializer):
         model = Habit
         fields = ['id', 'name', 'description', 'days', 'points', 'user']
         extra_kwargs = {"id": {"read_only": True}, "user": {"read_only": True}}
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['username'] = user.username
+        token['email'] = user.email
+        return token

@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import UserSerializer, HabitSerializer
+from .serializers import UserSerializer, HabitSerializer, CustomTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import User, Habit
 
 class CreateUserView(generics.CreateAPIView):
@@ -29,3 +30,8 @@ class HabitDeleteView(generics.DestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         return Habit.objects.filter(user=user)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [AllowAny]
