@@ -7,6 +7,7 @@ A brief description of the project and its purpose.
 - [Project Setup](#project-setup)
 - [Environment Variables](#environment-variables)
 - [Running the Application](#running-the-application)
+- [System Flow](#system-flow)
 - [API Documentation](#api-documentation)
 - [Testing](#testing)
 
@@ -92,6 +93,28 @@ For production, make sure to collect all static files:
 ````bash
 python manage.py collectstatic
 ````
+
+---
+
+## System Flow
+
+### 1. Creating a new User
+The CustomUserManager is responsible for the creation of user instances at the database level. It contains methods 
+like `create_user` and `create_superuser` that handle how users are created and saved.
+
+The UserSerializer is designed for serializing and deserializing data when interacting with APIs. It validates incoming
+data (e.g. checking that the password is provided) before creating a new user.
+
+Here’s a simplified flow for creating a user through the serializer:
+
+1. **API Request**: A POST request is made to create a new user.
+2. **UserSerializer**: The serializer receives the data and validates it.
+3. **Password Hashing**: The create method in UserSerializer hashes the password.
+4. **Model Creation**: return `super(UserSerializer, self).create(validated_data)` calls ModelSerializer's `create` method:
+   - This method instantiates the User model with the validated data.
+   - It then calls the `save()` method of the User model.
+5. **CustomUserManager**: The `save()` method utilizes the CustomUserManager for any custom logic (like password hashing), 
+as defined in the CustomUserManager.
 
 ---
 

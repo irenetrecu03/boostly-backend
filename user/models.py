@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.conf import settings
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
@@ -26,13 +28,25 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
+    password = models.CharField(max_length=30, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "username"]
 
     def __str__(self):
         return self.username
+
+
+class Habit(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    points = models.IntegerField(default=0)
+    days = ArrayField(models.IntegerField(), blank=True, default=list) # array to store selected days
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="habits")
+
+    def __str__(self):
+        return f"{self.name} - {self.user.username}"
