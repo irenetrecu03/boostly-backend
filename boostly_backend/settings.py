@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'user',
     'corsheaders',
     'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
