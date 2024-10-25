@@ -45,7 +45,7 @@ class Habit(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     points = models.IntegerField(default=0)
-    days = ArrayField(models.IntegerField(), blank=True, default=list) # array to store selected days
+    days = models.JSONField(blank=True, default=list)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="habits")
 
     def __str__(self):
