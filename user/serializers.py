@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class HabitSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Habit
