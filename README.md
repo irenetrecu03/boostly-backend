@@ -89,6 +89,16 @@ python manage.py runserver
 ````
 The server should now be accessible at http://127.0.0.1:8000/.
 
+If you are running Expo Go on another device, you need to expose the Django 
+server over LAN:
+````bash
+python manage.py runserver 0.0.0.0:8000
+````
+Then create a tunnel using [ngrok](https://ngrok.com/):
+````bash
+ngrok http http://localhost:8000
+````
+
 For production, make sure to collect all static files:
 ````bash
 python manage.py collectstatic
