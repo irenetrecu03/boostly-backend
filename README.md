@@ -152,3 +152,8 @@ Create a docker container with volumes:
 ````bash
 docker run -d --name boostly-backend-container -v .:/app -p 8001:8000 boostly-backend-image
 ````
+
+Run docker-compose.yml:
+`````bash
+docker compose up -d
+`````

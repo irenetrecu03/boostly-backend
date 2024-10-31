@@ -1,0 +1,21 @@
+name: boostly-backend
+
+services:
+  backend:
+    image: boostly-backend-image
+    container_name: django-container
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  ngrok:
+    image: ngrok/ngrok
+    container_name: ngrok-container
+    environment:
+      - NGROK_AUTHTOKEN=2nyP17CQcufFusQAadMjKPt4H7z_3QGVsjUgH7k86Thaa5ueQ
+    command: http backend:8000
+    depends_on:
+      - backend
