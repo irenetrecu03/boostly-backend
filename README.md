@@ -10,6 +10,7 @@ A brief description of the project and its purpose.
 - [System Flow](#system-flow)
 - [API Documentation](#api-documentation)
 - [Testing](#testing)
+- [Docker setup](#docker-setup)
 
 ---
 
@@ -137,4 +138,17 @@ Swagger/OpenAPI: http://127.0.0.1:8000/swagger/
 To run tests, use the following command:
 ````bash
 python manage.py test
+````
+
+---
+
+## Docker Setup
+Build a docker image:
+````bash
+docker build -t boostly-backend-image .
+````
+
+Create a docker container with volumes:
+````bash
+docker run -d --name boostly-backend-container -v .:/app -p 8001:8000 boostly-backend-image
 ````
