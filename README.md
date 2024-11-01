@@ -61,6 +61,7 @@ Update your environment variables to connect to the database (see [Environment V
 
 ### 5. Run Migrations
 ````bash
+python manage.py makemigrations
 python manage.py migrate
 ````
 
@@ -150,7 +151,11 @@ docker build -t boostly-backend-image .
 
 Create a docker container with volumes:
 ````bash
-docker run -d --name boostly-backend-container -v .:/app -p 8001:8000 boostly-backend-image
+docker run -d --name boostly-backend-container -v .:/app -p 8000:8000 boostly-backend-image
+````
+Build docker-compose.yml:
+````bash
+docker compose build
 ````
 
 Run docker-compose.yml:

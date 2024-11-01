@@ -8,8 +8,18 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
+    environment:
+      - SECRET_KEY=django-insecure-@vjyqj3vm8w+ewsr#)^7bbkwozdn&c+^)-g&xyseqvl8c#+*31
+      - DEBUG=False
+      - DB_NAME=boostlyDB
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    depends_on:
+      - postgres
+    networks:
+      - backend
 
   ngrok:
     image: ngrok/ngrok
@@ -19,3 +29,21 @@ services:
     command: http backend:8000
     depends_on:
       - backend
+    networks:
+      - backend
+
+  postgres:
+    image: postgres
+    container_name: postgres-container
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: boostlyDB
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
