@@ -1,0 +1,49 @@
+name: boostly-backend
+
+services:
+  backend:
+    image: boostly-backend-image
+    container_name: django-container
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=django-insecure-@vjyqj3vm8w+ewsr#)^7bbkwozdn&c+^)-g&xyseqvl8c#+*31
+      - DEBUG=False
+      - DB_NAME=boostlyDB
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  ngrok:
+    image: ngrok/ngrok
+    container_name: ngrok-container
+    environment:
+      - NGROK_AUTHTOKEN=2nyP17CQcufFusQAadMjKPt4H7z_3QGVsjUgH7k86Thaa5ueQ
+    command: http backend:8000
+    depends_on:
+      - backend
+    networks:
+      - backend
+
+  postgres:
+    image: postgres
+    container_name: postgres-container
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: boostlyDB
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
