@@ -10,6 +10,7 @@ A brief description of the project and its purpose.
 - [System Flow](#system-flow)
 - [API Documentation](#api-documentation)
 - [Testing](#testing)
+- [Docker setup](#docker-setup)
 
 ---
 
@@ -60,6 +61,7 @@ Update your environment variables to connect to the database (see [Environment V
 
 ### 5. Run Migrations
 ````bash
+python manage.py makemigrations
 python manage.py migrate
 ````
 
@@ -138,3 +140,25 @@ To run tests, use the following command:
 ````bash
 python manage.py test
 ````
+
+---
+
+## Docker Setup
+Build a docker image:
+````bash
+docker build -t boostly-backend-image .
+````
+
+Create a docker container with volumes:
+````bash
+docker run -d --name boostly-backend-container -v .:/app -p 8000:8000 boostly-backend-image
+````
+Build docker-compose.yml:
+````bash
+docker compose build
+````
+
+Run docker-compose.yml:
+`````bash
+docker compose up -d
+`````
