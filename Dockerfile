@@ -15,7 +15,6 @@ RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y netcat-openbsd
 
 COPY entrypoint.sh .
-RUN chmod 775 /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # Copy files into the container
@@ -25,6 +24,6 @@ COPY . .
 EXPOSE 8000
 
 # Set entry point
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["bash", "/app/entrypoint.sh"]
 # Run Django's development server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
