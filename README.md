@@ -51,6 +51,10 @@ source env/bin/activate
 ````bash
 pip install -r requirements.txt
 ````
+Update dependencies:
+````bash
+pip freeze > requirements.txt
+````
 
 ### 4. Set up the Database
 Ensure PostgreSQL (or your chosen database) is running. Create a new database:
@@ -153,7 +157,7 @@ Create a docker container with volumes:
 ````bash
 docker run -d --name boostly-backend-container -v .:/app -p 8000:8000 boostly-backend-image
 ````
-Build docker-compose.yml:
+Build a docker image using docker-compose.yml:
 ````bash
 docker compose build
 ````

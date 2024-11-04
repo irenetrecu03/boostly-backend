@@ -2,35 +2,18 @@ name: boostly-backend
 
 services:
   backend:
-    image: boostly-backend-image
-    container_name: django-container
+    image: boostly-backend
+    container_name: boostly-backend-container
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: /app/entrypoint.sh
     ports:
       - "8000:8000"
-    environment:
-      - SECRET_KEY=django-insecure-@vjyqj3vm8w+ewsr#)^7bbkwozdn&c+^)-g&xyseqvl8c#+*31
-      - DEBUG=False
-      - DB_NAME=boostlyDB
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_HOST=postgres
-      - DB_PORT=5432
+    volumes:
+      - .:/app
+    env_file:
+      - .env
     depends_on:
       - postgres
-    networks:
-      - backend
-
-  ngrok:
-    image: ngrok/ngrok
-    container_name: ngrok-container
-    environment:
-      - NGROK_AUTHTOKEN=2nyP17CQcufFusQAadMjKPt4H7z_3QGVsjUgH7k86Thaa5ueQ
-    command: http backend:8000
-    depends_on:
-      - backend
-    networks:
-      - backend
 
   postgres:
     image: postgres
@@ -41,9 +24,13 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: boostlyDB
-    networks:
+
+  ngrok:
+    image: ngrok/ngrok
+    container_name: ngrok-container
+    env_file:
+      - .env
+    command: http backend:8000
+    depends_on:
       - backend
 
-networks:
-  backend:
-    driver: bridge
