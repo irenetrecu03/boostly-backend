@@ -38,7 +38,8 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", "https://app-production-b16f.up.railway.app/"]
+CSRF_TRUSTED_ORIGINS = ["https://app-production-b16f.up.railway.app/"]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
