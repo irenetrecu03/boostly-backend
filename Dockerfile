@@ -15,6 +15,7 @@ RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y netcat-openbsd
 
 COPY entrypoint.sh .
+RUN chmod 775 /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # Copy files into the container
