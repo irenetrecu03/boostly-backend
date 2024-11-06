@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'drf_yasg',
+    'celery'
 ]
 
 MIDDLEWARE = [
@@ -115,11 +116,13 @@ if ENVIRONMENT == 'development':
             'PORT': os.environ.get('DB_PORT'),
         }
     }
+    CELERY_BROKER_URL = 'redis://redis:6379/0'
 else:
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.parse(env('DATABASE_URL', default='postgresql://'))
     }
+    CELERY_BROKER_URL = env('REDIS_URL', default='redis://')
 
 AUTH_USER_MODEL = 'user.User'
 
