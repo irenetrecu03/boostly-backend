@@ -89,6 +89,7 @@ DATABASE_PORT=5432
 ---
 
 ## Running the Application
+### 1. Development
 To start the server, run:
 ````bash
 python manage.py runserver
@@ -104,11 +105,15 @@ Then create a tunnel using [ngrok](https://ngrok.com/):
 ````bash
 ngrok http http://localhost:8000
 ````
+Go to the ngrok dashboard to find the URL path to send requests to the application.
 
 For production, make sure to collect all static files:
 ````bash
 python manage.py collectstatic
 ````
+
+### 2. Production
+The app is currently deployed in Railway with the following domain: https://boostly-app.up.railway.app
 
 ---
 
