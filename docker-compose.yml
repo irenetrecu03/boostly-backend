@@ -34,7 +34,7 @@ services:
     container_name: boostly-backend-ngrok
     env_file:
       - .env
-    command: http backend:8000
+    command: http app:8000
     depends_on:
       - app
 
@@ -51,6 +51,7 @@ services:
     image: boostly-backend-image
     container_name: boostly-backend-celery
     command: celery -A boostly_backend worker -E -l info
+    restart: on-failure
     volumes:
       - .:/app
     depends_on:
@@ -62,6 +63,7 @@ services:
     image: boostly-backend-image
     container_name: boostly-backend-flower
     command: celery -A boostly_backend flower --address=0.0.0.0 --port=5555
+    restart: on-failure
     ports:
       - "5556:5555"
     depends_on:
@@ -71,8 +73,11 @@ services:
     image: boostly-backend-image
     container_name: boostly-backend-beat
     command: celery -A boostly_backend beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    restart: on-failure
     volumes:
       - .:/app
+    env_file:
+      - .env
     depends_on:
       - app
       - redis
