@@ -1,8 +1,10 @@
 from rest_framework import generics, status
+from rest_framework.response import Response
+
 from .serializers import UserSerializer, HabitSerializer, CustomTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .tasks import create_habit, delete_habit, get_habit_list
+from .tasks import *
 from .models import User, Habit
 from celery.result import AsyncResult
 
@@ -26,9 +28,8 @@ class HabitListView(generics.ListCreateAPIView):
         """"
         Return a list of habits for the authenticated user.
         """
-        user_id = self.request.user.id
-        habits = get_habit_list(user_id)
-        return habits
+        user = self.request.user
+        return Habit.objects.filter(user=user)
 
     def perform_create(self, serializer):
         """
@@ -37,9 +38,7 @@ class HabitListView(generics.ListCreateAPIView):
         user_id = self.request.user.id
         habit_data = serializer.validated_data
 
-        task = create_habit.delay(user_id, habit_data)
-        result = AsyncResult(task.id)
-        print(task.id, result.status)
+        create_habit.delay(user_id, habit_data)
 
 
 class HabitDeleteView(generics.DestroyAPIView):
@@ -54,8 +53,16 @@ class HabitDeleteView(generics.DestroyAPIView):
         """
         Delete habit with the given ID for the authenticated user.
         """
-        habit_id = self.kwargs['id']
-        delete_habit.delay(habit_id)
+        habit_id = self.kwargs['pk']
+        task = delete_habit.delay(habit_id)
+
+        task_result = AsyncResult(task.id)
+
+        try:
+            task_result.successful()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            raise Exception(f"Could not delete habit: {e}")
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
