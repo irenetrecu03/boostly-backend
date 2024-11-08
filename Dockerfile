@@ -20,10 +20,3 @@ RUN chmod +x /app/entrypoint.sh
 # Copy files into the container
 COPY . .
 
-# Expose the port Django runs on
-EXPOSE 8000
-
-# Set entry point
-ENTRYPOINT ["bash", "/app/entrypoint.sh"]
-# Run Django's development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

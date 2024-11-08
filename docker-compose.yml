@@ -2,9 +2,9 @@ name: boostly-backend
 
 services:
   app:
+    build: .
     image: boostly-backend-image
     container_name: boostly-backend-django
-    build: .
     command: /app/entrypoint.sh
     ports:
       - "8000:8000"
@@ -25,6 +25,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: boostlyDB
+    restart: unless-stopped
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -38,7 +39,7 @@ services:
       - app
 
   redis:
-    image: "redis:alpine"
+    image: redis:alpine
     container_name: boostly-backend-redis
     restart: unless-stopped
     ports:
@@ -53,18 +54,16 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - redis
-      - postgres
       - app
+      - postgres
+      - redis
 
   flower:
     image: boostly-backend-image
     container_name: boostly-backend-flower
-    command: celery -A boostly_backend flower --address=0.0.0.0 --port=5555 --basic_auth=admin:password123
-    env_file:
-      - .env
+    command: celery -A boostly_backend flower --address=0.0.0.0 --port=5555
     ports:
-      - "5555:5555"
+      - "5556:5555"
     depends_on:
       - redis
 
