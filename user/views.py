@@ -1,9 +1,10 @@
-from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, status
 from .serializers import UserSerializer, HabitSerializer, CustomTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
+from .tasks import create_habit, delete_habit, get_habit_list
 from .models import User, Habit
+from celery.result import AsyncResult
 
 class CreateUserView(generics.CreateAPIView):
     """
@@ -25,29 +26,36 @@ class HabitListView(generics.ListCreateAPIView):
         """"
         Return a list of habits for the authenticated user.
         """
-        user = self.request.user
-        return Habit.objects.filter(user=user)
+        user_id = self.request.user.id
+        habits = get_habit_list(user_id)
+        return habits
 
     def perform_create(self, serializer):
         """
         Create a new habit for the current authenticated user.
         """
-        serializer.save(user=self.request.user)
+        user_id = self.request.user.id
+        habit_data = serializer.validated_data
+
+        task = create_habit.delay(user_id, habit_data)
+        result = AsyncResult(task.id)
+        print(task.id, result.status)
 
 
 class HabitDeleteView(generics.DestroyAPIView):
     """
     Delete habits for the authenticated user.
     """
+    queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
+    def delete(self, request, *args, **kwargs):
         """
-        Return a list of habits for the authenticated user.
+        Delete habit with the given ID for the authenticated user.
         """
-        user = self.request.user
-        return Habit.objects.filter(user=user)
+        habit_id = self.kwargs['id']
+        delete_habit.delay(habit_id)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

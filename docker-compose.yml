@@ -1,51 +1,83 @@
 name: boostly-backend
 
 services:
-  backend:
-    image: boostly-backend
-    container_name: boostly-backend-container
+  app:
+    image: boostly-backend-image
+    container_name: boostly-backend-django
     build: .
     command: /app/entrypoint.sh
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
     env_file:
       - .env
+    volumes:
+      - .:/app
     depends_on:
       - postgres
+      - redis
 
   postgres:
     image: postgres
-    container_name: postgres-container
+    container_name: boostly-backend-postgres
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: boostlyDB
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   ngrok:
     image: ngrok/ngrok
-    container_name: ngrok-container
+    container_name: boostly-backend-ngrok
     env_file:
       - .env
     command: http backend:8000
     depends_on:
-      - backend
+      - app
 
   redis:
-    image: redis
-    container_name: redis
+    image: "redis:alpine"
+    container_name: boostly-backend-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   celery:
-    image: boostly-backend
-    container_name: celery
-    command: celery -A backend worker --loglevel=info
+    image: boostly-backend-image
+    container_name: boostly-backend-celery
+    command: celery -A boostly_backend worker -E -l info
+    volumes:
+      - .:/app
     depends_on:
       - redis
       - postgres
-      - backend
+      - app
+
+  flower:
+    image: boostly-backend-image
+    container_name: boostly-backend-flower
+    command: celery -A boostly_backend flower --address=0.0.0.0 --port=5555 --basic_auth=admin:password123
+    env_file:
+      - .env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+
+  beat:
+    image: boostly-backend-image
+    container_name: boostly-backend-beat
+    command: celery -A boostly_backend beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    depends_on:
+      - app
+      - redis
+
+volumes:
+  postgres_data:
+  redis_data:

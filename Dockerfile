@@ -8,11 +8,11 @@ WORKDIR /app
 
 COPY requirements.txt .
 
+RUN apt-get update && apt-get install -y postgresql-client
+
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Install netcat
-RUN apt-get update && apt-get install -y netcat-openbsd
 
 COPY entrypoint.sh .
 RUN chmod +x /app/entrypoint.sh

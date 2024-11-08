@@ -67,8 +67,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'drf_yasg',
-    'celery',
-    'django_celery_results'
+    'django_celery_results',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -109,21 +109,25 @@ WSGI_APPLICATION = 'boostly_backend.wsgi.application'
 if ENVIRONMENT == 'development':
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ.get('DB_NAME'),
-            'USER': os.environ.get('DB_USER'),
-            'PASSWORD': os.environ.get('DB_PASSWORD'),
-            'HOST': os.environ.get('DB_HOST'),
-            'PORT': os.environ.get('DB_PORT'),
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DATABASE_NAME'),
+            'USER': os.environ.get('DATABASE_USER'),
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+            'HOST': os.environ.get('DATABASE_HOST'),
+            'PORT': os.environ.get('DATABASE_PORT'),
         }
     }
     CELERY_BROKER_URL = 'redis://redis:6379/0'
+
 else:
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.parse(env('DATABASE_URL', default='postgresql://'))
     }
     CELERY_BROKER_URL = env('REDIS_URL', default='redis://')
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXTENDED = True
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -186,5 +190,3 @@ CORS_ORIGIN_WHITELIST = [
     'http://172.30.224.1:8081',
 ]
 
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_EXTENDED = True

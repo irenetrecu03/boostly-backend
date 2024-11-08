@@ -5,4 +5,5 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'boostly_backend.settings')
 
 celery_app = Celery('boostly_backend')
 celery_app.config_from_object('django.conf:settings', namespace='CELERY')
+
 celery_app.autodiscover_tasks()
