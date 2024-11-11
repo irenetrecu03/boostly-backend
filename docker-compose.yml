@@ -29,6 +29,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: boostly-backend-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com  # Set your desired email
+      PGADMIN_DEFAULT_PASSWORD: admin         # Set a secure password
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
   ngrok:
     image: ngrok/ngrok
     container_name: boostly-backend-ngrok
