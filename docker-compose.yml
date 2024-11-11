@@ -32,9 +32,8 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: boostly-backend-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com  # Set your desired email
-      PGADMIN_DEFAULT_PASSWORD: admin         # Set a secure password
+    env_file:
+      - .env
     ports:
       - "5050:80"
     depends_on:
