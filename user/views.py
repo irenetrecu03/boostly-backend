@@ -54,16 +54,12 @@ class HabitDeleteView(generics.DestroyAPIView):
         """
         Delete habit with the given ID for the authenticated user.
         """
+        user_id = self.request.user.id
         habit_id = self.kwargs['pk']
-        task = delete_habit.delay(habit_id)
 
-        task_result = AsyncResult(task.id)
+        delete_habit.delay(habit_id, user_id)
 
-        try:
-            task_result.successful()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Exception as e:
-            raise Exception(f"Could not delete habit: {e}")
+        return Response({"message": "Delete task started successfully."}, status=status.HTTP_202_ACCEPTED)
 
 
 class HabitUpdateView(generics.RetrieveUpdateAPIView):
@@ -77,6 +73,18 @@ class HabitUpdateView(generics.RetrieveUpdateAPIView):
         if habit.user != self.request.user:
             raise PermissionDenied("You do not have permission to modify this habit.")
         return habit
+
+    def put(self, request, *args, **kwargs):
+        user_id = self.request.user.id
+        habit_id = self.kwargs['pk']
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        habit_data = serializer.validated_data
+
+        update_habit.delay(habit_id, habit_data, user_id)
+
+        return Response({"message": "Update task started successfully."}, status=status.HTTP_202_ACCEPTED)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
