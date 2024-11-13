@@ -9,5 +9,6 @@ urlpatterns = [
     path("token/", TokenObtainPairView.as_view(), name="get_token"),
     path("token/refresh/", TokenRefreshView.as_view(), name="refresh_token"),
     path("habits/", views.HabitListView.as_view(), name="habit_list"),
+    path('habits/update/<int:pk>/', views.HabitUpdateView.as_view(), name='habit-update'),
     path("habits/delete/<int:pk>/", views.HabitDeleteView.as_view(), name="delete_habit"),
 ]
