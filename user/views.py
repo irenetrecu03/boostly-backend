@@ -3,6 +3,7 @@ from rest_framework.response import Response
 
 from .serializers import UserSerializer, HabitSerializer, CustomTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .tasks import *
 from .models import User, Habit
@@ -63,6 +64,19 @@ class HabitDeleteView(generics.DestroyAPIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             raise Exception(f"Could not delete habit: {e}")
+
+
+class HabitUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Habit.objects.all()
+    serializer_class = HabitSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        habit = super().get_object()
+        # Check if the user is the owner of the habit
+        if habit.user != self.request.user:
+            raise PermissionDenied("You do not have permission to modify this habit.")
+        return habit
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
