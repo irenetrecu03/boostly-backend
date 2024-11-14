@@ -37,8 +37,8 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ["*", "https://app-production-b16f.up.railway.app/"]
-CSRF_TRUSTED_ORIGINS = ["https://app-production-b16f.up.railway.app/"]
+ALLOWED_HOSTS = ["*", "https://boostly-app.up.railway.app/"]
+CSRF_TRUSTED_ORIGINS = ["https://boostly-app.up.railway.app/"]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -50,8 +50,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(weeks=4),
 }
 
 # Application definition
